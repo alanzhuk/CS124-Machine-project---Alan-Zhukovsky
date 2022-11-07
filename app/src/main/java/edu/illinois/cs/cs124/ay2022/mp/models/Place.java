@@ -1,4 +1,6 @@
 package edu.illinois.cs.cs124.ay2022.mp.models;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Model storing information about a place retrieved from the backend server.
@@ -58,5 +60,34 @@ public final class Place {
 
   public String getDescription() {
     return description;
+  }
+
+  public static List<Place> search(final List<Place> places, final String search) {
+    if (places == null || search == null) {
+      throw new IllegalArgumentException();
+    }
+    if (places.size() == 0 || search.equals("") || search.split(" ").length == 0) {
+      return places;
+    }
+    String sHold = search.trim().toLowerCase();
+    List<Place> ret = new ArrayList<>();
+    for (Place i: places) {
+      boolean notYet = true;
+      String word = "";
+      for (char w: i.getDescription().toLowerCase().toCharArray()) {
+        if (w == '.' || w == '!' || w == '?' || w == ',' || w == ':' || w == ';' || w == '/' || w == ' ') {
+          word += " ";
+        } else if (Character.isAlphabetic(w) || Character.isDigit(w)) {
+          word += w;
+        }
+      }
+      for (String w: word.split(" ")) {
+        if (sHold.equals(w) && notYet) {
+          ret.add(i);
+          notYet = false;
+        }
+      }
+    }
+    return ret;
   }
 }

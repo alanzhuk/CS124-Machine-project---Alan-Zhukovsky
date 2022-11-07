@@ -3,6 +3,7 @@ package edu.illinois.cs.cs124.ay2022.mp.activities;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import edu.illinois.cs.cs124.ay2022.mp.R;
 import edu.illinois.cs.cs124.ay2022.mp.application.FavoritePlacesApplication;
 import edu.illinois.cs.cs124.ay2022.mp.models.Place;
@@ -28,7 +29,7 @@ import org.osmdroid.views.overlay.Overlay;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public final class MainActivity extends AppCompatActivity
-    implements Consumer<ResultMightThrow<List<Place>>> {
+    implements Consumer<ResultMightThrow<List<Place>>>, SearchView.OnQueryTextListener {
   // You may find this useful when adding logging
   private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -76,6 +77,9 @@ public final class MainActivity extends AppCompatActivity
     // Find the MapView component in the layout and configure it properly
     // Also save the reference for later use
     mapView = findViewById(R.id.map);
+
+    SearchView searchView = findViewById(R.id.search);
+    searchView.setOnQueryTextListener(this);
 
     // A OpenStreetMaps tile source provides the tiles that are used to render the map.
     // We use our own tile source with relatively-recent tiles for the Champaign-Urbana area, to
@@ -211,4 +215,19 @@ public final class MainActivity extends AppCompatActivity
     // Force the MapView to redraw so that we see the updated list of markers
     mapView.invalidate();
   }
+  @Override
+  public boolean onQueryTextSubmit(final String query) {
+    return false;
+  }
+  @Override
+  public boolean onQueryTextChange(final String newText) {
+    List<Place> hold = Place.search(allPlaces, newText);
+    if (hold.size() == 0) {
+      this.updateShownPlaces(allPlaces);
+    } else {
+      this.updateShownPlaces(hold);
+    }
+    return true;
+  }
 }
+

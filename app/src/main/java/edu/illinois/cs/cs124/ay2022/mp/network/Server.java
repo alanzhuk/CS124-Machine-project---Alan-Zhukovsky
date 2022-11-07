@@ -137,7 +137,7 @@ public final class Server extends Dispatcher {
     for (String[] parts : csvReader) {
       toReturn.add(
           new Place(
-              parts[0], parts[1], Double.parseDouble(parts[2]), Double.parseDouble(parts[3]), ""));
+              parts[0], parts[1], Double.parseDouble(parts[2]), Double.parseDouble(parts[3]), parts[4]));
     }
     return toReturn;
   }
