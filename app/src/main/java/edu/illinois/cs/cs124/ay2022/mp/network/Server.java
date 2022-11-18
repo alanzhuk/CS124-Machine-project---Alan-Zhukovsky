@@ -68,7 +68,6 @@ public final class Server extends Dispatcher {
   }
 
   private MockResponse postFavoritePlace(final RecordedRequest request) {
-    System.out.println(request.getBody().readUtf8());
     //On failure return a 400 Bad Request, can just use the previous thing but use something else instead of HTTP_OK
     // Deserialize POST body to Place object
     //Check the resulting Place Object to Make sure it's valid
@@ -78,9 +77,18 @@ public final class Server extends Dispatcher {
     //add it to our list of places
     //if the ID is new, add it. Otherwise replace it.
     //Place hold = new Place("", "", 99999, 99999, "");
+    String input = request.getBody().readUtf8();
+    System.out.println(input);
     Place hold;
+    if (!(input.contains("latitude")) || !(input.contains("longitude"))) {
+      System.out.println("ADJASODJASIDJO");
+      return new MockResponse()
+          // Indicate that the request succeeded (HTTP 200 OK)
+          .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
+          .setHeader("Content-Type", "application/json; charset=utf-8");
+    }
     try {
-      hold = OBJECT_MAPPER.readValue(request.getBody().readUtf8(), Place.class);
+      hold = OBJECT_MAPPER.readValue(input, Place.class);
     } catch (Exception e) {
       System.out.println("EXCEPTION" + e);
       return new MockResponse()
@@ -88,21 +96,21 @@ public final class Server extends Dispatcher {
           .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
           .setHeader("Content-Type", "application/json; charset=utf-8");
     }
-    if (hold.getDescription() == null || hold.getDescription() == "") {
+    if (hold.getDescription() == null || hold.getDescription().equals("")) {
       System.out.println("DESCRIPTION");
       return new MockResponse()
           // Indicate that the request succeeded (HTTP 200 OK)
           .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
           .setHeader("Content-Type", "application/json; charset=utf-8");
     }
-    if (hold.getId() == null || hold.getId() == "") {
+    if (hold.getId() == null || hold.getId().length() < 10) {
       System.out.println("ID");
       return new MockResponse()
           // Indicate that the request succeeded (HTTP 200 OK)
           .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
           .setHeader("Content-Type", "application/json; charset=utf-8");
     }
-    if (hold.getName() == null || hold.getName() == "") {
+    if (hold.getName() == null || hold.getName().equals("")) {
       System.out.println("NAME");
       return new MockResponse()
           // Indicate that the request succeeded (HTTP 200 OK)
@@ -122,6 +130,16 @@ public final class Server extends Dispatcher {
           // Indicate that the request succeeded (HTTP 200 OK)
           .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
           .setHeader("Content-Type", "application/json; charset=utf-8");
+    }
+    boolean notInArray = true;
+    for (int i = 0; i < places.size(); i++) {
+      if (places.get(i).getId().equals(hold.getId())) {
+        notInArray = false;
+        places.set(i, hold);
+      }
+    }
+    if (notInArray) {
+      places.add(hold);
     }
     return new MockResponse()
         // Indicate that the request succeeded (HTTP 200 OK)
