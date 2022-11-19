@@ -29,7 +29,7 @@ public class AddPlaceActivity extends AppCompatActivity {
     saveButton.setOnClickListener(v -> {
       Place newPlace = new Place(FavoritePlacesApplication.CLIENT_ID, "Zeus",
           Double.parseDouble(getIntent().getStringExtra("latitude")),
-          Double.parseDouble(getIntent().getStringExtra("longitude")), description.toString());
+          Double.parseDouble(getIntent().getStringExtra("longitude")), description.getText().toString());
       Client client = Client.start();
       CompletableFuture<ResultMightThrow<Boolean>> hld = new CompletableFuture<>();
       client.postFavoritePlace(newPlace, hld::complete);
