@@ -31,8 +31,8 @@ public class AddPlaceActivity extends AppCompatActivity {
           Double.parseDouble(getIntent().getStringExtra("latitude")),
           Double.parseDouble(getIntent().getStringExtra("longitude")), description.toString());
       Client client = Client.start();
-      CompletableFuture<ResultMightThrow<Boolean>> hold = new CompletableFuture<>();
-      client.postFavoritePlace(newPlace, hold::complete);
+      CompletableFuture<ResultMightThrow<Boolean>> hld = new CompletableFuture<>();
+      client.postFavoritePlace(newPlace, hld::complete);
       startActivity(returnToMain);
     });
   }
