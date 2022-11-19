@@ -2,6 +2,7 @@ package edu.illinois.cs.cs124.ay2022.mp.network;
 
 import android.os.Build;
 import android.util.Log;
+import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.ExecutorDelivery;
 import com.android.volley.Network;
@@ -16,7 +17,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.NotImplementedException;
 import edu.illinois.cs.cs124.ay2022.mp.application.FavoritePlacesApplication;
 import edu.illinois.cs.cs124.ay2022.mp.models.Place;
 import edu.illinois.cs.cs124.ay2022.mp.models.ResultMightThrow;
@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -95,7 +96,46 @@ public final class Client {
   }
 
   public void postFavoritePlace(final Place place, final Consumer<ResultMightThrow<Boolean>> callback) {
-    throw new NotImplementedException();
+    StringRequest postFavoritePlaceRequest =
+        new StringRequest(
+            Request.Method.POST,
+            FavoritePlacesApplication.SERVER_URL + "/favoriteplace/",
+            response -> {
+              // This code runs on success
+                /*
+                 * Deserialize the String into a List<Restaurant> using Jackson.
+                 * The TypeReference<>() {} is a bit of magic required to have Jackson
+                 * return a List with the correct type.
+                 * We wrap this in a try-catch to handle deserialization errors that may occur.
+                 */
+                //List<Place> places = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+                // Pass the List<Place> to the callback
+              callback.accept(new ResultMightThrow<>(true));
+            },
+            error -> {
+              // This code runs on failure
+              // Pass the Exception to the callback on error
+              callback.accept(new ResultMightThrow<>(error));
+            }) {
+          @Override
+          public byte[] getBody() throws AuthFailureError {
+            String serialized = "";
+            try {
+              serialized = OBJECT_MAPPER.writeValueAsString(place);
+            } catch (JsonProcessingException e) {
+              callback.accept(new ResultMightThrow<>(false));
+            }
+            return serialized.getBytes(StandardCharsets.UTF_8);
+          }
+
+          @Override
+          public String getBodyContentType() {
+            return "application/json; charset=utf-8";
+          }
+        };
+    // Actually queue the request
+    // The callbacks above will be run once it completes
+    requestQueue.add(postFavoritePlaceRequest);
   }
   /*
    * You do not need to modify the code below.

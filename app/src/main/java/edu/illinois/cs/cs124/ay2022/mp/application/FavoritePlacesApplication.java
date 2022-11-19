@@ -24,7 +24,7 @@ public final class FavoritePlacesApplication extends Application {
   public static final String SERVER_URL = "http://localhost:" + DEFAULT_SERVER_PORT + "/";
 
   // Put your ID (from ID.txt) here
-  public static final String CLIENT_ID = "";
+  public static final String CLIENT_ID = "208ad64d-d6ab-4181-9b72-9308e7a7b008";
 
   // Reference to our API client, which would potentially be used by multiple app activities
   private Client client;
