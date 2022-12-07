@@ -1,6 +1,9 @@
 package edu.illinois.cs.cs124.ay2022.mp.models;
+import android.nfc.Tag;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /*
  * Model storing information about a place retrieved from the backend server.
@@ -71,7 +74,29 @@ public final class Place {
     }
     String sHold = search.trim().toLowerCase();
     List<Place> ret = new ArrayList<>();
+    List<Place> filtered = new ArrayList<>();
+    List<String> filter = new ArrayList<>();
+    for (String w : search.split(" ")) {
+      if (w.substring(0, 1).equals("-")) {
+        filter.add(w.substring(1, w.length()).toLowerCase());
+      }
+    }
+    String toPrint = "";
+    for (String i : filter) {
+      toPrint += i;
+    }
     for (Place i: places) {
+      boolean cont = false;
+      for (String w : filter) {
+        if (i.getDescription().toLowerCase().contains(w)) {
+          filtered.add(i);
+          cont = true;
+          break;
+        }
+      }
+      if (cont) {
+        continue;
+      }
       boolean notYet = true;
       String word = "";
       for (char w: i.getDescription().toLowerCase().toCharArray()) {
@@ -85,6 +110,13 @@ public final class Place {
         if (sHold.equals(w) && notYet) {
           ret.add(i);
           notYet = false;
+        }
+      }
+    }
+    if (ret.size() == 0 && filtered.size() != 0) {
+      for (Place i : places) {
+        if (!(filtered.contains(i))) {
+          ret.add(i);
         }
       }
     }

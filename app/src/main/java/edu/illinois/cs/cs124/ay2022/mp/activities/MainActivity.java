@@ -36,6 +36,9 @@ public final class MainActivity extends AppCompatActivity
   // You may find this useful when adding logging
   private static final String TAG = MainActivity.class.getSimpleName();
 
+  //keeps whether or not it should just show you the ones you put in
+  private boolean showYours = false;
+
   // Reference to the MapView, initialized in onCreate, handy to have in other places
   private MapView mapView = null;
 
@@ -83,6 +86,8 @@ public final class MainActivity extends AppCompatActivity
 
     SearchView searchView = findViewById(R.id.search);
     searchView.setOnQueryTextListener(this);
+
+
 
     // A OpenStreetMaps tile source provides the tiles that are used to render the map.
     // We use our own tile source with relatively-recent tiles for the Champaign-Urbana area, to
@@ -199,7 +204,6 @@ public final class MainActivity extends AppCompatActivity
             }
             return true;
           });
-
       // Preserve the currently open place if there was one, and reopen the popup on the
       // appropriate marker
       if (marker.getId().equals(openPlace)) {
